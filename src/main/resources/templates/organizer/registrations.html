@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Registrations</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Registrations for <span th:text="${event.title}"></span></h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>CGPA</th>
+                    <th>Status</th>
+                    <th>Registered On</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reg : ${registrations}">
+                    <td th:text="${reg.user.name}"></td>
+                    <td th:text="${reg.user.cgpa != null ? reg.user.cgpa : 'N/A'}"></td>
+                    <td th:text="${reg.status}"></td>
+                    <td th:text="${#temporals.format(reg.registrationDate, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td>
+                        <form th:if="${reg.status == 'APPROVED'}" th:action="@{'/organizer/attendance/' + ${reg.id}}" method="post" class="d-inline">
+                            <select name="status" class="form-select form-select-sm d-inline w-auto">
+                                <option value="PRESENT">Present</option>
+                                <option value="ABSENT">Absent</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">Mark</button>
+                        </form>
+                        <span th:if="${reg.status != 'APPROVED'}" class="text-muted">No actions</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

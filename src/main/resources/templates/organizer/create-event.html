@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Create Event</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Create Event</h2>
+        <form th:action="@{/organizer/create-event}" th:object="${event}" method="post">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" th:field="*{description}" required></textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="date" class="form-label">Event Date</label>
+                    <input type="date" class="form-control" id="date" th:field="*{date}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="time" class="form-label">Event Time</label>
+                    <input type="time" class="form-control" id="time" th:field="*{time}" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="venue" class="form-label">Venue</label>
+                <input type="text" class="form-control" id="venue" th:field="*{venue}" required>
+            </div>
+            <div class="mb-3">
+                <label for="capacity" class="form-label">Capacity</label>
+                <input type="number" class="form-control" id="capacity" th:field="*{capacity}" required>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="registrationDeadline" class="form-label">Registration Deadline Date</label>
+                    <input type="date" class="form-control" id="registrationDeadline" th:field="*{registrationDeadline}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="registrationDeadlineTime" class="form-label">Registration Deadline Time</label>
+                    <input type="time" class="form-control" id="registrationDeadlineTime" th:field="*{registrationDeadlineTime}" required>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="cgpaCriteria" class="form-label">CGPA Criteria (optional)</label>
+                <input type="number" step="0.01" min="0" max="10" class="form-control" id="cgpaCriteria" th:field="*{cgpaCriteria}">
+            </div>
+            <div class="mb-3">
+                <label for="fee" class="form-label">Payment / Fee (optional)</label>
+                <input type="number" step="0.01" min="0" class="form-control" id="fee" th:field="*{fee}" placeholder="0.00">
+            </div>
+            <div class="mb-3">
+                <label for="ageMin" class="form-label">Min Age</label>
+                <input type="number" class="form-control" id="ageMin" th:field="*{ageMin}" value="18">
+            </div>
+            <div class="mb-3">
+                <label for="ageMax" class="form-label">Max Age</label>
+                <input type="number" class="form-control" id="ageMax" th:field="*{ageMax}" value="50">
+            </div>
+            <button type="submit" class="btn btn-primary">Create Event</button>
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const dateInput = document.getElementById('date');
+                const timeInput = document.getElementById('time');
+                const deadlineInput = document.getElementById('registrationDeadline');
+                const deadlineTimeInput = document.getElementById('registrationDeadlineTime');
+
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${year}-${month}-${day}`;
+
+                if (dateInput) dateInput.min = todayStr;
+                if (deadlineInput) deadlineInput.min = todayStr;
+
+                function getNowTime() {
+                    const now = new Date();
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    return `${hours}:${minutes}`;
+                }
+
+                function updateConstraints() {
+                    const selectedDate = dateInput.value;
+                    if (!selectedDate) {
+                        if (deadlineInput) deadlineInput.max = "";
+                        if (timeInput) timeInput.min = "";
+                        if (deadlineTimeInput) {
+                            deadlineTimeInput.max = "";
+                            deadlineTimeInput.min = "";
+                        }
+                        return;
+                    }
+
+                    // Registration Deadline Date max limit
+                    if (deadlineInput) {
+                        deadlineInput.max = selectedDate;
+                        if (deadlineInput.value > selectedDate) {
+                            deadlineInput.value = selectedDate;
+                        }
+                    }
+
+                    // Time limit for today
+                    if (timeInput) {
+                        if (selectedDate === todayStr) {
+                            const nowTime = getNowTime();
+                            timeInput.min = nowTime;
+
+                            if (timeInput.value && timeInput.value < timeInput.min) {
+                                timeInput.value = timeInput.min;
+                            }
+                        } else {
+                            timeInput.min = "";
+                        }
+                    }
+                    
+                    // Deadline Time Constraints
+                    if (deadlineTimeInput && deadlineInput) {
+                        // Max time constraint if deadline date == event date
+                        if (deadlineInput.value === selectedDate) {
+                            if (timeInput && timeInput.value) {
+                                deadlineTimeInput.max = timeInput.value;
+                                if (deadlineTimeInput.value && deadlineTimeInput.value > timeInput.value) {
+                                    deadlineTimeInput.value = timeInput.value;
+                                }
+                            } else {
+                                deadlineTimeInput.max = "";
+                            }
+                        } else {
+                            deadlineTimeInput.max = "";
+                        }
+                        
+                        // Min time constraint if deadline date == today
+                        if (deadlineInput.value === todayStr) {
+                            const nowTime = getNowTime();
+                            deadlineTimeInput.min = nowTime;
+                            if (deadlineTimeInput.value && deadlineTimeInput.value < deadlineTimeInput.min) {
+                                deadlineTimeInput.value = deadlineTimeInput.min;
+                            }
+                        } else {
+                            deadlineTimeInput.min = "";
+                        }
+                    }
+                }
+
+                if (dateInput) dateInput.addEventListener('change', updateConstraints);
+                if (timeInput) timeInput.addEventListener('change', updateConstraints);
+                if (deadlineInput) deadlineInput.addEventListener('change', updateConstraints);
+                
+                updateConstraints();
+
+                const cgpaInput = document.getElementById('cgpaCriteria');
+                if (cgpaInput) {
+                    cgpaInput.addEventListener('input', function() {
+                        if (parseFloat(this.value) > 10) {
+                            this.value = 10;
+                        } else if (parseFloat(this.value) < 0) {
+                            this.value = 0;
+                        }
+                    });
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

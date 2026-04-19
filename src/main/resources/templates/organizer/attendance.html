@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Attendance</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Attendance for <span th:text="${event.title}"></span></h2>
+        <p>Total Present: <span th:text="${present}"></span></p>
+        <p>Total Absent: <span th:text="${absent}"></span></p>
+        <form th:action="@{'/organizer/event/' + ${event.id} + '/attendance'}" method="post">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${approvedRegs.isEmpty()}">
+                        <td colspan="2">No approved registrations yet.</td>
+                    </tr>
+                    <tr th:each="reg : ${approvedRegs}">
+                        <td th:text="${reg.user.name}"></td>
+                        <td>
+                            <select th:name="'status_' + ${reg.id}" class="form-select w-auto">
+                                <option value="" th:selected="${!currentStatuses.containsKey(reg.id)}">--- Not Marked ---</option>
+                                <option value="PRESENT" th:selected="${currentStatuses.containsKey(reg.id) and currentStatuses.get(reg.id) == 'PRESENT'}">Present</option>
+                                <option value="ABSENT" th:selected="${currentStatuses.containsKey(reg.id) and currentStatuses.get(reg.id) == 'ABSENT'}">Absent</option>
+                            </select>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary mt-3">Save Attendance Changes</button>
+        </form>
+    </div>
+</body>
+</html>
