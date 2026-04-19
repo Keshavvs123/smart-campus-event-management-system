@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>System Reports</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-chart-line text-primary"></i> System Analytics & Reports</h2>
+            <a href="/admin/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Gross Revenue</h5>
+                        <h3 th:text="${'$' + #numbers.formatDecimal(totalRevenue, 1, 'POINT', 2, 'COMMA')}"></h3>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Number of Active Events</h5>
+                        <h3 th:text="${eventStats.size()}"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Event Participation Tracking</h4>
+        <table class="table table-bordered table-striped mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Event Title</th>
+                    <th>Capacity</th>
+                    <th>Registrations</th>
+                    <th>Actual Present</th>
+                    <th>Turnout (%)</th>
+                    <th>Fee Set</th>
+                    <th>Revenue ($)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="stat : ${eventStats}">
+                    <td th:text="${stat.event.title}"></td>
+                    <td th:text="${stat.event.capacity}"></td>
+                    <td th:text="${stat.totalRegs}"></td>
+                    <td th:text="${stat.presentCount}"></td>
+                    <td>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar" role="progressbar" 
+                                 th:style="'width: ' + ${stat.turnout} + '%'" 
+                                 th:classappend="${stat.turnout < 50 ? 'bg-danger' : (stat.turnout < 80 ? 'bg-warning' : 'bg-success')}"
+                                 th:text="${stat.turnout} + '%'">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span th:if="${stat.event.fee != null and stat.event.fee > 0}" th:text="${'$' + stat.event.fee}"></span>
+                        <span th:if="${stat.event.fee == null or stat.event.fee == 0}">Free</span>
+                    </td>
+                    <td th:text="${'$' + stat.revenue}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

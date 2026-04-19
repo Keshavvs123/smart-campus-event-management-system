@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Manage Payments</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Manage Payments</h2>
+        <a href="/admin/dashboard" class="btn btn-secondary mb-3">Back to Dashboard</a>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Event</th>
+                    <th>Required Fee</th>
+                    <th>Payment Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${payments.isEmpty()}">
+                    <td colspan="5">No payment records found.</td>
+                </tr>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment.user.name}"></td>
+                    <td th:text="${payment.event.title}"></td>
+                    <td th:text="${payment.event.fee}"></td>
+                    <td>
+                        <span th:if="${payment.paymentStatus.name() == 'PENDING'}" class="badge bg-warning">Pending</span>
+                        <span th:if="${payment.paymentStatus.name() == 'PAID'}" class="badge bg-success">Paid</span>
+                    </td>
+                    <td>
+                        <form th:if="${payment.paymentStatus.name() == 'PENDING'}" th:action="@{'/admin/mark-paid/' + ${payment.id}}" method="post">
+                            <button type="submit" class="btn btn-sm btn-primary">Mark as Paid</button>
+                        </form>
+                        <span th:if="${payment.paymentStatus.name() == 'PAID'}" class="text-muted">Cleared</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

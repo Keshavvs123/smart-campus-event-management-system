@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Admin Dashboard</h2>
+        <div class="row mb-5">
+            <div class="col-md-3">
+                <a href="#all-events" class="text-decoration-none text-dark w-100">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <h5 class="stat-number" th:text="${totalEvents}">0</h5>
+                            <p class="card-text fw-bold">Total Events</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/admin/users" class="text-decoration-none text-dark w-100">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <h5 class="stat-number" th:text="${totalStudents}">0</h5>
+                            <p class="card-text fw-bold">Total Students</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="#all-events" class="text-decoration-none text-dark w-100">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <h5 class="stat-number" th:text="${openEvents}">0</h5>
+                            <p class="card-text fw-bold">Open Events</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="/admin/payments" class="text-decoration-none text-dark w-100">
+                    <div class="card stat-card text-center">
+                        <div class="card-body">
+                            <h5 class="stat-number"><i class="fas fa-file-invoice-dollar h1 border-0"></i></h5>
+                            <p class="card-text fw-bold mt-2">Payment List</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="mb-5 d-flex gap-3">
+            <a href="/admin/reports" class="btn btn-primary px-4"><i class="fas fa-chart-bar me-2"></i> View Detailed Reports</a>
+            <a href="/admin/payments" class="btn btn-success px-4"><i class="fas fa-credit-card me-2"></i> Manage Payments</a>
+            <a href="/admin/users" class="btn btn-secondary px-4"><i class="fas fa-users me-2"></i> Manage Users</a>
+        </div>
+        <h4>All Events</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Organizer</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="event : ${events}">
+                    <td th:text="${event.title}"></td>
+                    <td th:text="${event.organizer.name}"></td>
+                    <td th:text="${event.status}"></td>
+                    <td>
+                        <span class="text-muted">Faculty handles approval</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

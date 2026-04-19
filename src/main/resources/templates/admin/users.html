@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Manage Users</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Manage Users</h2>
+        <a href="/admin/dashboard" class="btn btn-secondary mb-3">Back to Dashboard</a>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Current Role</th>
+                    <th>Update Role</th>
+                    <th>Danger Zone</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${users}">
+                    <td th:text="${u.name}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td>
+                        <span class="badge bg-primary" th:text="${u.role}"></span>
+                    </td>
+                    <td>
+                        <form th:action="@{'/admin/users/' + ${u.id} + '/change-role'}" method="post" class="d-flex w-75">
+                            <select name="role" class="form-select form-select-sm me-2">
+                                <option value="STUDENT" th:selected="${u.role.name() == 'STUDENT'}">Student</option>
+                                <option value="ORGANIZER" th:selected="${u.role.name() == 'ORGANIZER'}">Organizer</option>
+                                <option value="FACULTY" th:selected="${u.role.name() == 'FACULTY'}">Faculty</option>
+                                <option value="ADMIN" th:selected="${u.role.name() == 'ADMIN'}">Admin</option>
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-info">Update</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form th:action="@{'/admin/users/' + ${u.id} + '/delete'}" method="post" onsubmit="return confirm('Are you sure you want to completely delete this user?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete User</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
