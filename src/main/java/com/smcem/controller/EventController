@@ -1,0 +1,9 @@
+@RestController
+@RequestMapping("/events")
+public class EventController {
+
+    @GetMapping
+    public String getEvents() {
+        return "Events API working 🚀";
+    }
+}

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Student Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Student Dashboard</h2>
+        <a href="/student/my-registrations" class="btn btn-secondary mb-3">My Registrations</a>
+        <h3>Ongoing Events</h3>
+        <div class="row">
+            <div th:each="event : ${events}" class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${event.title}"></h5>
+                        <p class="card-text" th:text="${event.description}"></p>
+                        <p><strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}"></span></p>
+                        <p><strong>Time:</strong> <span th:text="${event.time}"></span></p>
+                        <p><strong>Venue:</strong> <span th:text="${event.venue}"></span></p>
+                        <p><strong>Capacity:</strong> <span th:text="${event.capacity}"></span></p>
+                        <p><strong>Fee:</strong>
+                            <span th:if="${event.fee != null and event.fee > 0}" th:text="${#numbers.formatDecimal(event.fee, 1, 'POINT', 2, 'NONE')}"></span>
+                            <span th:if="${event.fee == null or event.fee == 0}">Free</span>
+                        </p>
+                        <p><strong>CGPA Required:</strong>
+                            <span th:if="${event.cgpaCriteria != null}" th:text="${event.cgpaCriteria}"></span>
+                            <span th:if="${event.cgpaCriteria == null}">None</span>
+                        </p>
+                        <p><strong>Seats Left:</strong>
+                            <span th:text="${seatsLeftMap[event.id]}"></span>
+                        </p>
+                        <button th:if="${event.status.name() == 'OPEN' and seatsLeftMap[event.id] > 0 and !registeredEvents.contains(event.id)}" type="button" class="btn btn-primary" data-bs-toggle="modal" th:data-bs-target="'#registerModal' + ${event.id}">
+                            Register
+                        </button>
+                        
+                        <span th:if="${event.status.name() == 'OPEN' and seatsLeftMap[event.id] == 0 and !registeredEvents.contains(event.id)}" class="text-danger">Full / No seats left</span>
+                        <span th:if="${registeredEvents.contains(event.id)}" class="text-success">Already Registered</span>
+                        <span th:if="${event.status.name() != 'OPEN'}" class="text-muted">Registration Closed</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="mt-5">Completed Events</h3>
+        <div class="row">
+            <div th:if="${completedEvents.isEmpty()}" class="col-12">
+                <p>No completed events to show.</p>
+            </div>
+            <div th:each="event : ${completedEvents}" class="col-md-4 mb-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted" th:text="${event.title}"></h5>
+                        <p class="card-text text-muted" th:text="${event.description}"></p>
+                        <p class="text-muted"><strong>Date:</strong> <span th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}"></span></p>
+                        <a th:if="${registeredEvents.contains(event.id)}" th:href="@{'/student/certificate/' + ${event.id}}" class="btn btn-success mt-2">Download Certificate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Modals -->
+        <th:block th:each="event : ${events}">
+            <div class="modal fade" th:id="'registerModal' + ${event.id}" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true" th:if="${event.status.name() == 'OPEN' and seatsLeftMap[event.id] > 0 and !registeredEvents.contains(event.id)}">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title">Registration: <span th:text="${event.title}"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form th:action="@{'/student/register/' + ${event.id}}" method="post">
+                  <div class="modal-body">
+                      <p>Please enter/confirm your student details before registering:</p>
+                      <div class="mb-3">
+                          <label class="form-label">Date of Birth</label>
+                          <input type="date" class="form-control" name="dateOfBirth" th:id="'dob_' + ${event.id}" th:value="${user.dateOfBirth}" onchange="calculateAge(this, 'age_' + this.getAttribute('data-event-id'))" th:data-event-id="${event.id}" required>
+                      </div>
+                      <div class="mb-3">
+                          <label class="form-label">Age</label>
+                          <input type="number" class="form-control" name="age" th:id="'age_' + ${event.id}" th:value="${user.age}" readonly required>
+                      </div>
+                      <div class="mb-3">
+                          <label class="form-label">CGPA</label>
+                          <input type="number" step="0.01" min="0" max="10" class="form-control" name="cgpa" th:value="${user.cgpa}" required>
+                      </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Confirm Registration</button>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+        </th:block>
+
+        <script>
+            function calculateAge(dobInput, ageInputId) {
+                if (dobInput.value) {
+                    var dob = new Date(dobInput.value);
+                    var diff_ms = Date.now() - dob.getTime();
+                    var age_dt = new Date(diff_ms); 
+                    var age = Math.abs(age_dt.getUTCFullYear() - 1970);
+                    document.getElementById(ageInputId).value = age;
+                }
+            }
+            // Auto calculate on load if values exist
+            document.addEventListener("DOMContentLoaded", function() {
+                var dobInputs = document.querySelectorAll('input[type="date"][name="dateOfBirth"]');
+                dobInputs.forEach(function(input) {
+                    if(input.value) {
+                        calculateAge(input, 'age_' + input.getAttribute('data-event-id'));
+                    }
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

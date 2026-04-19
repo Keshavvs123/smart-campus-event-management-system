@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Participation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Great+Vibes&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .cert-container {
+            position: relative;
+            width: 1050px;
+            height: 730px;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        /* Decorative Borders */
+        .cert-border-outer {
+            position: absolute;
+            top: 20px; left: 20px; right: 20px; bottom: 20px;
+            border: 3px solid #1a365d;
+            box-sizing: border-box;
+        }
+
+        .cert-border-inner {
+            position: absolute;
+            top: 30px; left: 30px; right: 30px; bottom: 30px;
+            border: 1px solid #c5a059;
+            box-sizing: border-box;
+            background: 
+                linear-gradient(135deg, rgba(249,250,251,0.9) 0%, rgba(255,255,255,1) 100%);
+        }
+
+        /* Corner accents */
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #c5a059;
+            z-index: 10;
+        }
+        .corner-tl { top: 25px; left: 25px; border-right: none; border-bottom: none; }
+        .corner-tr { top: 25px; right: 25px; border-left: none; border-bottom: none; }
+        .corner-bl { bottom: 25px; left: 25px; border-right: none; border-top: none; }
+        .corner-br { bottom: 25px; right: 25px; border-left: none; border-top: none; }
+
+        /* Content Wrapper */
+        .cert-content {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .cert-header {
+            margin-top: 20px;
+        }
+
+        .university-name {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            color: #1a365d;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .cert-title {
+            font-family: 'Cinzel', serif;
+            font-size: 56px;
+            color: #c5a059;
+            margin: 10px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .cert-body {
+            margin: 20px 0;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .presented-to {
+            font-size: 18px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .recipient-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 64px;
+            color: #0f172a;
+            margin: 0;
+            border-bottom: 2px solid #e2e8f0;
+            display: inline-block;
+            padding: 0 40px 10px;
+        }
+
+        .cert-reason {
+            font-size: 18px;
+            color: #64748b;
+            margin: 30px 0 10px;
+            line-height: 1.6;
+        }
+
+        .event-name {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            color: #1a365d;
+            font-weight: 700;
+            margin: 15px 0;
+        }
+
+        .event-details {
+            font-size: 16px;
+            color: #475569;
+            margin-top: 15px;
+        }
+
+        /* Footer / Signatures */
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 0 40px;
+            margin-bottom: 20px;
+        }
+
+        .signature-block {
+            text-align: center;
+            width: 200px;
+        }
+
+        .signature-line {
+            border-bottom: 1px solid #1a365d;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        .signature-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .signature-title {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Gold Seal */
+        .seal {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #d4af37 0%, #aa771c 50%, #d4af37 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .seal::before {
+            content: '';
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border: 2px dashed #aa771c;
+            border-radius: 50%;
+        }
+
+        .seal-content {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: #fff;
+            text-align: center;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        /* Print Button */
+        .print-btn {
+            background: #1a365d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .print-btn:hover {
+            background: #254a80;
+            transform: translateY(-2px);
+        }
+
+        /* Hide elements when printing */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+            }
+            .print-btn {
+                display: none !important;
+            }
+            .cert-container {
+                box-shadow: none;
+                margin: 0;
+                transform: scale(0.95);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cert-container">
+        <!-- Borders and Corners -->
+        <div class="cert-border-outer"></div>
+        <div class="cert-border-inner"></div>
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="cert-content">
+            <div class="cert-header">
+                <div class="university-name">Smart Campus Event Management</div>
+                <div class="cert-title">Certificate of Participation</div>
+            </div>
+
+            <div class="cert-body">
+                <div class="presented-to">This is proudly presented to</div>
+                <div>
+                    <h2 class="recipient-name" th:text="${user.name}">John Doe</h2>
+                </div>
+                <div class="cert-reason">
+                    For successfully participating and demonstrating excellence in the event
+                </div>
+                <div class="event-name" th:text="${event.title}">Annual Tech Symposium 2026</div>
+                <div class="event-details">
+                    Held on <strong th:text="${#temporals.format(event.date, 'MMMM dd, yyyy')}">April 20, 2026</strong> <br>
+                    at <strong th:text="${event.venue}">Main Auditorium</strong>
+                </div>
+            </div>
+
+            <div class="cert-footer">
+                <div class="signature-block">
+                    <div class="signature-line" style="font-family: 'Great Vibes', cursive; font-size: 28px; color: #1a365d; display:flex; align-items:flex-end; justify-content:center; padding-bottom:5px;" th:text="${event.organizer.name}">Signature</div>
+                    <div class="signature-name" th:text="${event.organizer.name}">Organizer Name</div>
+                    <div class="signature-title">Event Organizer</div>
+                </div>
+
+                <div class="seal">
+                    <div class="seal-content">
+                        SMCEM<br>OFFICIAL<br>GRANT
+                    </div>
+                </div>
+
+                <div class="signature-block">
+                    <div class="signature-line"></div>
+                    <div class="signature-name">Dr. Administration</div>
+                    <div class="signature-title">Dean of Campus Events</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Action -->
+    <button onclick="window.print()" class="print-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Export as PDF / Print
+    </button>
+
+</body>
+</html>
