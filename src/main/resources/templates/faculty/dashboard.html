@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Faculty Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>Faculty Dashboard</h2>
+
+        <section class="mb-5">
+            <h4>Pending Event Approvals</h4>
+            <div th:if="${pendingEvents.empty}">
+                <p class="text-muted">No events pending approval.</p>
+            </div>
+            <div th:if="${!pendingEvents.empty}">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Organizer</th>
+                            <th>Date</th>
+                            <th>Venue</th>
+                            <th>CGPA</th>
+                            <th>Fee</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="event : ${pendingEvents}">
+                            <td th:text="${event.title}"></td>
+                            <td th:text="${event.organizer.name}"></td>
+                            <td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}"></td>
+                            <td th:text="${event.venue}"></td>
+                            <td th:text="${event.cgpaCriteria != null ? event.cgpaCriteria : 'None'}"></td>
+                            <td th:text="${event.fee != null && event.fee > 0 ? event.fee : 'Free'}"></td>
+                            <td>
+                                <form th:action="@{'/faculty/approve-event/' + ${event.id}}" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                </form>
+                                <form th:action="@{'/faculty/reject-event/' + ${event.id}}" method="post" class="d-inline" style="display:inline-block; vertical-align: top; max-width: 280px;">
+                                    <div class="mb-2">
+                                        <textarea class="form-control form-control-sm" name="comments" placeholder="State reason or request changes (e.g., Change Date)" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-danger">Request Changes / Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="mb-5">
+            <h4>Monitor Event Progress</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-primary">Ongoing Events</h5>
+                    <ul class="list-group">
+                        <li th:if="${activeEvents.empty}" class="list-group-item text-muted">No active events</li>
+                        <li th:each="event : ${activeEvents}" class="list-group-item">
+                            <strong th:text="${event.title}"></strong> By <span th:text="${event.organizer.name}"></span><br>
+                            <span class="text-muted" th:text="${#temporals.format(event.date, 'dd/MM/yyyy')} + ' at ' + ${event.venue}"></span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-success">Completed Events</h5>
+                    <ul class="list-group">
+                        <li th:if="${completedEvents.empty}" class="list-group-item text-muted">No completed events</li>
+                        <li th:each="event : ${completedEvents}" class="list-group-item bg-light">
+                            <strong th:text="${event.title}"></strong> By <span th:text="${event.organizer.name}"></span><br>
+                            <span class="text-muted" th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h4>Send Notification to Organizer</h4>
+            <form th:action="@{/faculty/send-notification}" method="post">
+                <div class="mb-3">
+                    <label for="receiverId" class="form-label">Select Organizer</label>
+                    <select class="form-control" id="receiverId" name="receiverId" required>
+                        <option th:each="org : ${organizers}" th:value="${org.id}" th:text="${org.name}"></option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" name="message" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </section>
+    </div>
+</body>
+</html>
