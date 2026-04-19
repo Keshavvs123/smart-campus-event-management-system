@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>My Registrations</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2>My Registrations</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reg : ${registrations}">
+                    <td th:text="${reg.event.title}"></td>
+                    <td th:text="${reg.status}"></td>
+                    <td>
+                        <a th:if="${reg.status.name() == 'APPROVED'}" th:href="@{'/student/certificate/' + ${reg.event.id}}" class="btn btn-sm btn-success">Download Certificate</a>
+                        <span th:if="${reg.status.name() != 'APPROVED'}" class="text-muted">Not Approved</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

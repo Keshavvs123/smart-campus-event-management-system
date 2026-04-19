@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title>Secure Payment - SMCEM</title>
+</head>
+<body>
+    <div layout:fragment="content" class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Payment Card UI -->
+                <div class="card auth-card shadow-lg border-0" style="animation: none;">
+                    <div class="card-header bg-transparent border-0 text-center pt-4 pb-2">
+                        <i class="fas fa-lock text-success fs-1 mb-3"></i>
+                        <h3 class="fw-bold text-dark">Secure Checkout</h3>
+                        <p class="text-muted">Complete your registration for <strong class="text-primary" th:text="${event.title}"></strong></p>
+                    </div>
+                    
+                    <div class="card-body px-4 pb-4">
+                        
+                        <!-- Order Summary -->
+                        <div class="bg-light rounded p-3 mb-4 border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="text-muted fw-bold">Event Fee:</span>
+                                <span class="fs-5 fw-bold text-dark" th:text="'$' + ${event.fee}">$0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted fw-bold">Status:</span>
+                                <span class="badge badge-pending">PENDING</span>
+                            </div>
+                        </div>
+
+                        <!-- Mock Payment Form -->
+                        <form th:action="@{'/student/process-payment/' + ${registration.id}}" method="post">
+                            
+                            <h5 class="mb-3 text-dark fw-bold">Payment Details</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">CARDHOLDER NAME</label>
+                                <input type="text" class="form-control" th:value="${user.name}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted small fw-bold">CARD NUMBER</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white"><i class="fab fa-cc-visa text-primary fs-4"></i></span>
+                                    <input type="text" name="cardNumber" class="form-control" placeholder="**** **** **** ****" required pattern="\d{16}" title="Please enter a 16 digit dummy card number">
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <label class="form-label text-muted small fw-bold">EXPIRY DATE</label>
+                                    <input type="text" class="form-control" placeholder="MM/YY" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-muted small fw-bold">CVV</label>
+                                    <input type="text" class="form-control" placeholder="123" required>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 py-3 d-flex justify-content-center align-items-center gap-2">
+                                <i class="fas fa-check-circle"></i> Pay <span th:text="'$' + ${event.fee}"></span> & Complete
+                            </button>
+                        </form>
+                        
+                    </div>
+                    <div class="card-footer bg-transparent border-0 text-center pb-4">
+                        <small class="text-muted"><i class="fas fa-shield-alt"></i> Payments are mock tests and no real cards are charged.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
