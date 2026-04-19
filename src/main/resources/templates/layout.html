@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} + ' - SMCEM'">SMCEM</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+    
+    <style layout:fragment="extra-css"></style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top" th:if="${#authentication}">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" th:href="@{/}">
+                <i class="fas fa-calendar-check"></i> SMCEM
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item" th:if="${#authentication.principal.authorities.contains('ROLE_STUDENT')}">
+                        <a class="nav-link" th:href="@{/student/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authentication.principal.authorities.contains('ROLE_ORGANIZER')}">
+                        <a class="nav-link" th:href="@{/organizer/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authentication.principal.authorities.contains('ROLE_FACULTY')}">
+                        <a class="nav-link" th:href="@{/faculty/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item" th:if="${#authentication.principal.authorities.contains('ROLE_ADMIN')}">
+                        <a class="nav-link" th:href="@{/admin/dashboard}">Dashboard</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle"></i> <span th:text="${#authentication.name}">User</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" th:href="@{/profile}">My Profile</a></li>
+                            <li><a class="dropdown-item" th:href="@{/change-password}">Change Password</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" th:href="@{/logout}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main layout:fragment="content">
+        <div class="container mt-4">
+            <!-- Messages -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i> <span th:text="${infoMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>SMCEM</h5>
+                    <p>Smart Campus Event Management System</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about" class="footer-link">About Us</a></li>
+                        <li><a href="/contact" class="footer-link">Contact</a></li>
+                        <li><a href="/privacy" class="footer-link">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p class="text-white-50">
+                        <i class="fas fa-envelope"></i> info@smcem.com<br>
+                        <i class="fas fa-phone"></i> +1-800-SMCEM-01
+                    </p>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <div class="text-center footer-text">
+                <p>&copy; 2024 Smart Campus Event Management System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script layout:fragment="extra-js"></script>
+</body>
+</html>
